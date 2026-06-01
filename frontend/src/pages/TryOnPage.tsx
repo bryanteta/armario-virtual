@@ -177,9 +177,9 @@ export function TryOnPage() {
             className="w-full flex items-center justify-center gap-2 bg-violet-600 hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-xl transition-colors"
           >
             {running ? (
-              <><Loader2 size={18} className="animate-spin" /> Procesando con IA...</>
+              <><Loader2 size={18} className="animate-spin" /> Procesando... puede tardar 1-3 min</>
             ) : (
-              <><Camera size={18} /> Probarme la prenda</>
+              <><Camera size={18} /> Probarme la prenda (gratis)</>
             )}
           </button>
         </div>
@@ -193,10 +193,12 @@ export function TryOnPage() {
 
           <div className="flex-1 flex items-center justify-center">
             {running ? (
-              <div className="text-center">
+              <div className="text-center px-4">
                 <Loader2 size={48} className="mx-auto text-violet-400 animate-spin mb-3" />
-                <p className="text-gray-500 text-sm">La IA está procesando...</p>
-                <p className="text-gray-400 text-xs mt-1">Puede tardar 1-2 minutos</p>
+                <p className="text-gray-600 text-sm font-medium">IDM-VTON procesando...</p>
+                <p className="text-gray-400 text-xs mt-2 leading-relaxed">
+                  El modelo gratuito en HuggingFace puede tardar entre 1 y 5 minutos según la cola. Por favor espera.
+                </p>
               </div>
             ) : result ? (
               <div className="w-full">

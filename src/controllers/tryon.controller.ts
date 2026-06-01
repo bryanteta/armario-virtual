@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { ClothingItem } from '../models/ClothingItem';
-import { runVirtualTryOn } from '../services/fal.service';
+import { runVirtualTryOn } from '../services/tryon.service';
 import { AppError } from '../middleware/errorHandler';
 import type { ApiResponse } from '../types';
 
