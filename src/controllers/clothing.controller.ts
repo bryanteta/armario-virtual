@@ -93,6 +93,35 @@ export async function getClothingItemById(
   }
 }
 
+export async function removeClothingBackground(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { id } = req.params;
+    const userId = req.userId!;
+
+    const item = await ClothingItem.findOne({ _id: id, userId });
+    if (!item) throw new AppError(404, 'Clothing item not found');
+
+    const { removeImageBackground } = await import('../services/removebg.service');
+    const newUrl = await removeImageBackground(item.imageUrl);
+
+    item.imageUrl = newUrl;
+    await item.save();
+
+    const body: ApiResponse<IClothingItem> = {
+      success: true,
+      data: item,
+      message: 'Background removed successfully',
+    };
+    res.json(body);
+  } catch (err) {
+    next(err);
+  }
+}
+
 // PATCH /api/clothing/:id/image-url — updates imageUrl after client-side bg removal
 export async function updateClothingImageUrl(
   req: Request,
