@@ -29,6 +29,12 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     },
   });
 
+  const contentType = res.headers.get('content-type') ?? '';
+  if (!contentType.includes('application/json')) {
+    const text = await res.text();
+    throw new Error(`El servidor devolvió una respuesta inesperada (HTTP ${res.status}). Primeros 100 chars: ${text.slice(0, 100)}`);
+  }
+
   const json = await res.json();
 
   if (!res.ok || !json.success) {
