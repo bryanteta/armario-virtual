@@ -1,7 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { ClothingItem } from '../models/ClothingItem';
 import { extractClothingLabels } from '../services/openai.service';
-import { removeBackground } from '../services/replicate.service';
 import { buildPublicUrl } from '../services/storage.service';
 import { AppError } from '../middleware/errorHandler';
 import type { ApiResponse, PaginatedResponse } from '../types';
@@ -94,7 +93,8 @@ export async function getClothingItemById(
   }
 }
 
-export async function removeClothingBackground(
+// PATCH /api/clothing/:id/image-url — updates imageUrl after client-side bg removal
+export async function updateClothingImageUrl(
   req: Request,
   res: Response,
   next: NextFunction
@@ -102,20 +102,20 @@ export async function removeClothingBackground(
   try {
     const { id } = req.params;
     const userId = req.userId!;
+    const { imageUrl } = req.body as { imageUrl?: string };
 
-    const item = await ClothingItem.findOne({ _id: id, userId });
+    if (!imageUrl || typeof imageUrl !== 'string') {
+      throw new AppError(400, 'Field "imageUrl" is required');
+    }
+
+    const item = await ClothingItem.findOneAndUpdate(
+      { _id: id, userId },
+      { imageUrl },
+      { new: true }
+    );
     if (!item) throw new AppError(404, 'Clothing item not found');
 
-    const outputUrl = await removeBackground(item.imageUrl);
-
-    item.imageUrl = outputUrl;
-    await item.save();
-
-    const body: ApiResponse<IClothingItem> = {
-      success: true,
-      data: item,
-      message: 'Background removed successfully',
-    };
+    const body: ApiResponse<IClothingItem> = { success: true, data: item };
     res.json(body);
   } catch (err) {
     next(err);

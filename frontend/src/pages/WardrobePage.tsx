@@ -3,7 +3,8 @@ import toast from 'react-hot-toast';
 import { Shirt } from 'lucide-react';
 import { ClothingCard } from '../components/ClothingCard';
 import { UploadZone } from '../components/UploadZone';
-import { fetchClothing, uploadClothing, deleteClothing, removeBg } from '../api/clothing';
+import { fetchClothing, uploadClothing, deleteClothing } from '../api/clothing';
+import { removeBgAndSave } from '../api/removeBg';
 import type { ClothingItem } from '../types';
 
 export function WardrobePage() {
@@ -50,13 +51,15 @@ export function WardrobePage() {
   };
 
   const handleRemoveBg = async (id: string) => {
-    const toastId = toast.loading('Quitando fondo con IA...');
+    const item = items.find((i) => i._id === id);
+    if (!item) return;
+    const toastId = toast.loading('Iniciando eliminación de fondo...');
     try {
-      const res = await removeBg(id);
-      if (res.data) {
-        setItems((prev) => prev.map((i) => (i._id === id ? res.data! : i)));
-        toast.success('Fondo eliminado', { id: toastId });
-      }
+      const updated = await removeBgAndSave(item, (msg) => {
+        toast.loading(msg, { id: toastId });
+      });
+      setItems((prev) => prev.map((i) => (i._id === id ? updated : i)));
+      toast.success('¡Fondo eliminado!', { id: toastId });
     } catch (e: any) {
       toast.error(e.message ?? 'Error quitando el fondo', { id: toastId });
     }
