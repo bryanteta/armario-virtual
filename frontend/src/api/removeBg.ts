@@ -8,6 +8,7 @@ export async function removeBgAndSave(
 ): Promise<ClothingItem> {
   onProgress?.('Eliminando fondo en el servidor...');
   const res = await post<ApiResponse<ClothingItem>>(`/clothing/${item._id}/remove-bg`, {});
-  if (!res.data) throw new Error('No se pudo eliminar el fondo');
-  return res.data;
+  const updated = (res as ApiResponse<ClothingItem>).data;
+  if (!updated) throw new Error('No se pudo eliminar el fondo');
+  return updated;
 }

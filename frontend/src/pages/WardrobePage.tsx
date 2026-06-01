@@ -6,7 +6,8 @@ import { UploadZone } from '../components/UploadZone';
 import { FilterBar } from '../components/FilterBar';
 import { uploadClothing, deleteClothing } from '../api/clothing';
 import { removeBgAndSave } from '../api/removeBg';
-import type { ClothingItem, Categoria, Estilo, Temporada } from '../types';
+import { get } from '../api/client';
+import type { ClothingItem, Categoria, Estilo, Temporada, PaginatedResponse } from '../types';
 
 export function WardrobePage() {
   const [items, setItems] = useState<ClothingItem[]>([]);
@@ -23,11 +24,8 @@ export function WardrobePage() {
       if (categoria !== 'todas') params.set('categoria', categoria);
       if (estilo) params.set('estilo', estilo);
       if (temporada) params.set('temporada', temporada);
-      const res = await fetch(`/api/clothing?${params}`, {
-        headers: { 'X-User-Id': localStorage.getItem('armario_user_id') ?? '' },
-      });
-      const json = await res.json();
-      setItems(json.data ?? []);
+      const res = await get<PaginatedResponse<ClothingItem>>(`/clothing?${params}`);
+      setItems(res.data ?? []);
     } catch {
       toast.error('Error cargando el armario');
     } finally {
