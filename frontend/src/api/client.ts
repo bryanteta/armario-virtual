@@ -1,9 +1,20 @@
 const USER_ID_KEY = 'armario_user_id';
 
+function generateId(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  // Fallback para HTTP (sin contexto seguro)
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
+  });
+}
+
 export function getUserId(): string {
   let id = localStorage.getItem(USER_ID_KEY);
   if (!id) {
-    id = `user_${crypto.randomUUID()}`;
+    id = `user_${generateId()}`;
     localStorage.setItem(USER_ID_KEY, id);
   }
   return id;
