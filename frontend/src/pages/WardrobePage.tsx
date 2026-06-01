@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 import { Shirt } from 'lucide-react';
 import { ClothingCard } from '../components/ClothingCard';
 import { UploadZone } from '../components/UploadZone';
-import { fetchClothing, uploadClothing, deleteClothing } from '../api/clothing';
+import { fetchClothing, uploadClothing, deleteClothing, removeBg } from '../api/clothing';
 import type { ClothingItem } from '../types';
 
 export function WardrobePage() {
@@ -49,6 +49,19 @@ export function WardrobePage() {
     }
   };
 
+  const handleRemoveBg = async (id: string) => {
+    const toastId = toast.loading('Quitando fondo con IA...');
+    try {
+      const res = await removeBg(id);
+      if (res.data) {
+        setItems((prev) => prev.map((i) => (i._id === id ? res.data! : i)));
+        toast.success('Fondo eliminado', { id: toastId });
+      }
+    } catch (e: any) {
+      toast.error(e.message ?? 'Error quitando el fondo', { id: toastId });
+    }
+  };
+
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
       <div className="mb-8">
@@ -77,7 +90,7 @@ export function WardrobePage() {
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {items.map((item) => (
-            <ClothingCard key={item._id} item={item} onDelete={handleDelete} />
+            <ClothingCard key={item._id} item={item} onDelete={handleDelete} onRemoveBg={handleRemoveBg} />
           ))}
         </div>
       )}

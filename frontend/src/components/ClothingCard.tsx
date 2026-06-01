@@ -1,4 +1,5 @@
-import { Trash2, Tag } from 'lucide-react';
+import { Trash2, Tag, Eraser, Loader2 } from 'lucide-react';
+import { useState } from 'react';
 import type { ClothingItem } from '../types';
 import { resolveImageUrl } from '../api/client';
 
@@ -14,11 +15,21 @@ const CATEGORIA_COLORS: Record<string, string> = {
 interface Props {
   item: ClothingItem;
   onDelete?: (id: string) => void;
+  onRemoveBg?: (id: string) => Promise<void>;
   onSelect?: (item: ClothingItem) => void;
   selected?: boolean;
 }
 
-export function ClothingCard({ item, onDelete, onSelect, selected }: Props) {
+export function ClothingCard({ item, onDelete, onRemoveBg, onSelect, selected }: Props) {
+  const [removing, setRemoving] = useState(false);
+
+  const handleRemoveBg = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!onRemoveBg) return;
+    setRemoving(true);
+    try { await onRemoveBg(item._id); } finally { setRemoving(false); }
+  };
+
   return (
     <div
       onClick={() => onSelect?.(item)}
@@ -46,17 +57,27 @@ export function ClothingCard({ item, onDelete, onSelect, selected }: Props) {
               <span className="text-xs text-gray-500 truncate">{item.color_principal}</span>
             </div>
           </div>
-          {onDelete && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete(item._id);
-              }}
-              className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-lg hover:bg-red-50 text-red-400 hover:text-red-600 shrink-0"
-            >
-              <Trash2 size={14} />
-            </button>
-          )}
+          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+            {onRemoveBg && (
+              <button
+                onClick={handleRemoveBg}
+                disabled={removing}
+                title="Quitar fondo"
+                className="p-1 rounded-lg hover:bg-violet-50 text-gray-400 hover:text-violet-600 disabled:opacity-50"
+              >
+                {removing ? <Loader2 size={14} className="animate-spin" /> : <Eraser size={14} />}
+              </button>
+            )}
+            {onDelete && (
+              <button
+                onClick={(e) => { e.stopPropagation(); onDelete(item._id); }}
+                title="Eliminar"
+                className="p-1 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600"
+              >
+                <Trash2 size={14} />
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="flex flex-wrap gap-1 mt-2">

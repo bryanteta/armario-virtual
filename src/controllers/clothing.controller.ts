@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import { ClothingItem } from '../models/ClothingItem';
 import { extractClothingLabels } from '../services/openai.service';
+import { removeBackground } from '../services/replicate.service';
 import { buildPublicUrl } from '../services/storage.service';
 import { AppError } from '../middleware/errorHandler';
 import type { ApiResponse, PaginatedResponse } from '../types';
@@ -87,6 +88,34 @@ export async function getClothingItemById(
     if (!item) throw new AppError(404, 'Clothing item not found');
 
     const body: ApiResponse<IClothingItem> = { success: true, data: item as unknown as IClothingItem };
+    res.json(body);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function removeClothingBackground(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { id } = req.params;
+    const userId = req.userId!;
+
+    const item = await ClothingItem.findOne({ _id: id, userId });
+    if (!item) throw new AppError(404, 'Clothing item not found');
+
+    const outputUrl = await removeBackground(item.imageUrl);
+
+    item.imageUrl = outputUrl;
+    await item.save();
+
+    const body: ApiResponse<IClothingItem> = {
+      success: true,
+      data: item,
+      message: 'Background removed successfully',
+    };
     res.json(body);
   } catch (err) {
     next(err);

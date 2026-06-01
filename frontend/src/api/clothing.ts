@@ -1,4 +1,4 @@
-import { get, postForm, del } from './client';
+import { get, post, postForm, del } from './client';
 import type { ClothingItem, PaginatedResponse, ApiResponse } from '../types';
 
 export async function fetchClothing(page = 1): Promise<PaginatedResponse<ClothingItem>> {
@@ -9,6 +9,10 @@ export async function uploadClothing(file: File): Promise<ApiResponse<ClothingIt
   const form = new FormData();
   form.append('image', file);
   return postForm('/clothing/upload', form);
+}
+
+export async function removeBg(id: string): Promise<ApiResponse<ClothingItem>> {
+  return post(`/clothing/${id}/remove-bg`, {});
 }
 
 export async function deleteClothing(id: string): Promise<ApiResponse<null>> {
