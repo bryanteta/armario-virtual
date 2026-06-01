@@ -25,15 +25,22 @@ export async function runVirtualTryOn(
 
   fal.config({ credentials: apiKey });
 
-  const result = await fal.subscribe('fashn/tryon', {
-    input: {
-      model_image: modelImageUrl,
-      garment_image: garmentImageUrl,
-      category: getCategory(categoria),
-      garment_photo_type: 'auto',
-      nsfw_filter: true,
-    },
-  }) as { data: TryOnResult };
+  let result: { data: TryOnResult };
+  try {
+    result = await fal.subscribe('fashn/tryon', {
+      input: {
+        model_image: modelImageUrl,
+        garment_image: garmentImageUrl,
+        category: getCategory(categoria),
+        garment_photo_type: 'auto',
+        nsfw_filter: true,
+      },
+    }) as { data: TryOnResult };
+  } catch (err: any) {
+    const detail = err?.body?.detail ?? err?.message ?? String(err);
+    console.error('[fal.ai error]', detail);
+    throw new Error(`fal.ai error: ${detail}`);
+  }
 
   const url = result.data?.images?.[0]?.url;
   if (!url) throw new Error('fal.ai did not return an image URL');
