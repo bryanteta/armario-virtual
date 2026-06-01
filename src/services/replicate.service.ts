@@ -20,9 +20,9 @@ function extractUrl(output: unknown): string {
   throw new Error('Unexpected output format from Replicate');
 }
 
-// Removes background from clothing image — lucataco/remove-bg (BRIA RMBG 1.4)
+// Removes background from clothing image — cjwbw/rembg
 export async function removeBackground(imageUrl: string): Promise<string> {
-  const output = await getClient().run('lucataco/remove-bg:95fcc2a26d3899cd6c2691c900465aaeff466285d65bf02a4ca5a3eed0a77ded', {
+  const output = await getClient().run('cjwbw/rembg:fb8af171cfa1616ddcf1242c093f9c46bcada5ad4cf6f2fbe8b81b330ec5c003', {
     input: { image: imageUrl },
   });
   return extractUrl(output);
