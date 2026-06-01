@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { ClothingItem } from '../models/ClothingItem';
-import { runVirtualTryOn } from '../services/replicate.service';
+import { runVirtualTryOn } from '../services/fal.service';
 import { AppError } from '../middleware/errorHandler';
 import type { ApiResponse } from '../types';
 
@@ -28,33 +28,22 @@ export async function tryOn(req: Request, res: Response, next: NextFunction): Pr
       throw new AppError(400, 'Field "modelImageUrl" is required');
     }
 
-    // Validate URL format
-    try {
-      new URL(modelImageUrl);
-    } catch {
+    try { new URL(modelImageUrl); } catch {
       throw new AppError(400, '"modelImageUrl" must be a valid URL');
     }
 
     const clothingItem = await ClothingItem.findOne({ _id: clothingId, userId });
-    if (!clothingItem) {
-      throw new AppError(404, 'Clothing item not found');
-    }
-
-    const garmentDescription = `${clothingItem.subcategoria} de color ${clothingItem.color_principal}, estilo ${clothingItem.estilo}`;
+    if (!clothingItem) throw new AppError(404, 'Clothing item not found');
 
     const outputImageUrl = await runVirtualTryOn(
-      clothingItem.imageUrl,
       modelImageUrl,
-      garmentDescription
+      clothingItem.imageUrl,
+      clothingItem.categoria
     );
 
     const body: ApiResponse<TryOnResult> = {
       success: true,
-      data: {
-        outputImageUrl,
-        clothingId,
-        modelImageUrl,
-      },
+      data: { outputImageUrl, clothingId, modelImageUrl },
       message: 'Virtual try-on completed successfully',
     };
 
