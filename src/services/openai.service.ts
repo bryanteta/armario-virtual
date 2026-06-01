@@ -68,34 +68,43 @@ interface OutfitSuggestion {
 
 export async function generateOutfitSuggestions(
   ocasion: string,
-  inventory: IClothingItem[]
+  inventory: IClothingItem[],
+  categorias?: string[],
+  estilo?: string
 ): Promise<OutfitSuggestion[]> {
   const inventoryDescription = inventory
     .map(
       (item) =>
-        `ID: ${item._id} | ${item.subcategoria} | Color: ${item.color_principal} | Estilo: ${item.estilo} | Temporada: ${item.temporada}`
+        `ID: ${item._id} | Categoría: ${item.categoria} | ${item.subcategoria} | Color: ${item.color_principal} | Estilo: ${item.estilo} | Temporada: ${item.temporada}`
     )
     .join('\n');
+
+  const restricciones: string[] = [];
+  if (categorias && categorias.length > 0) {
+    restricciones.push(`- Cada outfit DEBE incluir prendas de estas categorías: ${categorias.join(', ')}`);
+  }
+  if (estilo) {
+    restricciones.push(`- El estilo preferido es: ${estilo}`);
+  }
 
   const prompt = `Eres un estilista personal experto. El usuario tiene el siguiente inventario de ropa:
 
 ${inventoryDescription}
 
 Genera exactamente 3 outfits completos para la ocasión: "${ocasion}".
+${restricciones.length ? '\nRESTRICCIONES OBLIGATORIAS:\n' + restricciones.join('\n') : ''}
 
 Devuelve un JSON con este formato exacto:
 [
   {
     "prendas": ["<ID_MONGODB_1>", "<ID_MONGODB_2>", ...],
-    "justificacion": "Explicación breve de por qué este outfit es ideal"
-  },
-  ...
+    "justificacion": "Explicación breve de por qué este outfit es ideal para la ocasión"
+  }
 ]
 
 IMPORTANTE:
 - Usa SOLO los IDs tal como aparecen en el inventario
-- Cada outfit debe incluir prendas que combinen entre sí
-- Considera la ocasión, el estilo y la temporada
+- Cada outfit debe incluir prendas que combinen en color y estilo
 - Responde SOLO con el JSON válido, sin texto adicional`;
 
   const response = await getClient().chat.completions.create({

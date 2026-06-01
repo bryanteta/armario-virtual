@@ -13,7 +13,7 @@ export async function generateOutfits(
   next: NextFunction
 ): Promise<void> {
   try {
-    const { ocasion } = req.body as { ocasion?: string };
+    const { ocasion, categorias, estilo } = req.body as { ocasion?: string; categorias?: string[]; estilo?: string };
     const userId = req.userId!;
 
     if (!ocasion || typeof ocasion !== 'string' || ocasion.trim() === '') {
@@ -25,7 +25,7 @@ export async function generateOutfits(
       throw new AppError(422, 'You need at least 2 clothing items to generate an outfit');
     }
 
-    const suggestions = await generateOutfitSuggestions(ocasion.trim(), inventory as never);
+    const suggestions = await generateOutfitSuggestions(ocasion.trim(), inventory as never, categorias, estilo);
 
     const outfits = await Promise.all(
       suggestions.map(async (s) => {

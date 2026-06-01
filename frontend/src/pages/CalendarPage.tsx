@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
-import { ChevronLeft, ChevronRight, X, Sparkles, CalendarDays } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, Sparkles, CalendarDays, Info } from 'lucide-react';
 import { fetchMonth, assignOutfit, removeEntry, type CalendarEntry } from '../api/calendar';
 import { fetchOutfits } from '../api/outfits';
 import { resolveImageUrl } from '../api/client';
@@ -224,33 +224,56 @@ export function CalendarPage() {
               <p className="text-sm">Genera outfits primero en la pestaña Outfits</p>
             </div>
           ) : (
-            <div className="flex-1 overflow-y-auto space-y-2 pr-1">
-              {filteredOutfits.map(outfit => (
-                <button
-                  key={outfit._id}
-                  onClick={() => selectedDay ? handleAssign(outfit) : toast('Primero selecciona un día en el calendario', { icon: '👆' })}
-                  disabled={saving}
-                  className={`w-full text-left rounded-xl border-2 p-2 transition-all ${
-                    selectedDay
-                      ? 'border-violet-200 hover:border-violet-400 hover:bg-violet-50 cursor-pointer'
-                      : 'border-gray-100 cursor-default'
-                  }`}
-                >
-                  <div className="flex gap-1.5 mb-1.5">
-                    {outfit.prendas.slice(0, 4).map((p, i) => (
-                      <img
-                        key={i}
-                        src={resolveImageUrl(p.imageUrl)}
-                        alt={p.subcategoria}
-                        className="w-10 h-10 rounded-lg object-cover"
-                      />
-                    ))}
-                  </div>
-                  <p className="text-xs font-semibold text-gray-700 capitalize truncate">{outfit.ocasion}</p>
-                  <p className="text-xs text-gray-400 truncate">{outfit.justificacion.slice(0, 60)}...</p>
-                </button>
-              ))}
-            </div>
+            <>
+              {!selectedDay && (
+                <div className="flex items-center gap-1.5 text-xs text-amber-600 bg-amber-50 rounded-xl px-3 py-2 mb-2">
+                  <Info size={12} />
+                  Selecciona un día en el calendario primero
+                </div>
+              )}
+              <div className="flex-1 overflow-y-auto space-y-2 pr-1">
+                {filteredOutfits.map(outfit => {
+                  const isAssigned = Object.values(entries).some(e => e.outfitId._id === outfit._id);
+                  return (
+                    <button
+                      key={outfit._id}
+                      onClick={() => selectedDay ? handleAssign(outfit) : toast('Selecciona un día primero', { icon: '👆' })}
+                      disabled={saving}
+                      className={`w-full text-left rounded-xl border-2 p-2.5 transition-all ${
+                        selectedDay
+                          ? 'border-violet-200 hover:border-violet-500 hover:bg-violet-50 cursor-pointer'
+                          : 'border-gray-100 opacity-60 cursor-default'
+                      }`}
+                    >
+                      <div className="flex gap-1.5 mb-2">
+                        {outfit.prendas.slice(0, 4).map((p, i) => (
+                          <img
+                            key={i}
+                            src={resolveImageUrl(p.imageUrl)}
+                            alt={p.subcategoria}
+                            className="w-11 h-11 rounded-lg object-cover"
+                          />
+                        ))}
+                        {outfit.prendas.length > 4 && (
+                          <div className="w-11 h-11 rounded-lg bg-gray-100 flex items-center justify-center text-xs text-gray-500 font-medium">
+                            +{outfit.prendas.length - 4}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs font-semibold text-gray-700 capitalize truncate">{outfit.ocasion}</p>
+                        {isAssigned && (
+                          <span className="text-xs text-violet-500 shrink-0 ml-1">• en uso</span>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-400 truncate mt-0.5">
+                        {outfit.prendas.map(p => p.subcategoria).join(' · ')}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
+            </>
           )}
         </div>
       </div>
