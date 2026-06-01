@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import toast from 'react-hot-toast';
-import { Camera, Loader2, ImageIcon, CheckCircle2, Upload, UserRound } from 'lucide-react';
+import { Camera, Loader2, ImageIcon, CheckCircle2, UserRound } from 'lucide-react';
 import { ClothingCard } from '../components/ClothingCard';
 import { fetchClothing } from '../api/clothing';
 import { runTryOn, uploadModelPhoto } from '../api/tryon';
