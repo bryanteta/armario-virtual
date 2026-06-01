@@ -21,12 +21,12 @@ export async function removeBgAndSave(
 ): Promise<ClothingItem> {
   onProgress?.('Descargando imagen...');
   const blob = await removeBackground(item.imageUrl, {
+    publicPath: 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/dist/',
     progress: (key, current, total) => {
       if (key === 'compute:inference') {
         onProgress?.(`Procesando: ${Math.round((current / total) * 100)}%`);
       }
     },
-    publicPath: `${window.location.origin}/`,
   });
 
   onProgress?.('Subiendo resultado...');
