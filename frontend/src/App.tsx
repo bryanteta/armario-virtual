@@ -3,7 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import { Navbar } from './components/Navbar';
 import { WardrobePage } from './pages/WardrobePage';
 import { OutfitsPage } from './pages/OutfitsPage';
-import { TryOnPage } from './pages/TryOnPage';
+import { CalendarPage } from './pages/CalendarPage';
 
 export default function App() {
   return (
@@ -14,7 +14,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<WardrobePage />} />
           <Route path="/outfits" element={<OutfitsPage />} />
-          <Route path="/tryon" element={<TryOnPage />} />
+          <Route path="/calendario" element={<CalendarPage />} />
         </Routes>
       </main>
     </BrowserRouter>

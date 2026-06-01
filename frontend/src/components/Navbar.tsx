@@ -1,10 +1,10 @@
 import { NavLink } from 'react-router-dom';
-import { Shirt, Sparkles, Camera } from 'lucide-react';
+import { Shirt, Sparkles, CalendarDays } from 'lucide-react';
 
 const links = [
   { to: '/', label: 'Armario', icon: Shirt },
   { to: '/outfits', label: 'Outfits', icon: Sparkles },
-  { to: '/tryon', label: 'Probador', icon: Camera },
+  { to: '/calendario', label: 'Calendario', icon: CalendarDays },
 ];
 
 export function Navbar() {
