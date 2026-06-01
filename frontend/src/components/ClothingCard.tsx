@@ -1,5 +1,6 @@
 import { Trash2, Tag } from 'lucide-react';
 import type { ClothingItem } from '../types';
+import { resolveImageUrl } from '../api/client';
 
 const CATEGORIA_COLORS: Record<string, string> = {
   superior: 'bg-blue-100 text-blue-700',
@@ -27,7 +28,7 @@ export function ClothingCard({ item, onDelete, onSelect, selected }: Props) {
     >
       <div className="aspect-square overflow-hidden bg-gray-50">
         <img
-          src={item.imageUrl}
+          src={resolveImageUrl(item.imageUrl)}
           alt={item.subcategoria}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />

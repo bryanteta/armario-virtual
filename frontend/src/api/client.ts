@@ -57,3 +57,9 @@ export async function postForm<T>(path: string, form: FormData): Promise<T> {
 export async function del<T>(path: string): Promise<T> {
   return request<T>(path, { method: 'DELETE' });
 }
+
+// Reescribe URLs localhost:3000 al origen actual del navegador
+export function resolveImageUrl(url: string): string {
+  if (!url) return url;
+  return url.replace(/^https?:\/\/localhost:\d+/, window.location.origin);
+}

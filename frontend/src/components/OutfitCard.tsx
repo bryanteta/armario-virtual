@@ -1,5 +1,6 @@
 import { Trash2, Sparkles } from 'lucide-react';
 import type { Outfit } from '../types';
+import { resolveImageUrl } from '../api/client';
 
 interface Props {
   outfit: Outfit;
@@ -30,7 +31,7 @@ export function OutfitCard({ outfit, onDelete }: Props) {
             <div key={prenda._id} className="shrink-0 w-20">
               <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-50 border border-gray-100">
                 <img
-                  src={prenda.imageUrl}
+                  src={resolveImageUrl(prenda.imageUrl)}
                   alt={prenda.subcategoria}
                   className="w-full h-full object-cover"
                 />

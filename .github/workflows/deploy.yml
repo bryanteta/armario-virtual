@@ -22,14 +22,17 @@ jobs:
             echo "▶ Pulling latest code..."
             git pull origin main
 
-            echo "▶ Installing backend dependencies..."
-            npm ci --omit=dev
+            echo "▶ Installing all dependencies (needed for build)..."
+            npm ci
 
             echo "▶ Installing frontend dependencies..."
             cd frontend && npm ci && cd ..
 
             echo "▶ Building project..."
             npm run build
+
+            echo "▶ Pruning dev dependencies..."
+            npm prune --omit=dev
 
             echo "▶ Restarting app..."
             pm2 restart armario-virtual --update-env
